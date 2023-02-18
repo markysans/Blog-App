@@ -9,6 +9,7 @@ import com.springboot.blog.repository.CommentRepository;
 import com.springboot.blog.repository.PostRepository;
 import com.springboot.blog.service.CommentService;
 import lombok.RequiredArgsConstructor;
+import org.modelmapper.ModelMapper;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
@@ -21,6 +22,8 @@ public class CommentServiceImpl implements CommentService {
 
     private final CommentRepository commentRepository;
     private final PostRepository postRepository;
+
+    private final ModelMapper modelMapper;
 
     @Override
     public CommentDto createComment(long postId, CommentDto commentDto) {
@@ -83,20 +86,22 @@ public class CommentServiceImpl implements CommentService {
     }
 
     private CommentDto mapToDTO(Comment comment) {
-        CommentDto commentDto = new CommentDto();
-        commentDto.setId(comment.getId());
-        commentDto.setName(comment.getName());
-        commentDto.setBody(comment.getBody());
-        commentDto.setEmail(comment.getEmail());
+        CommentDto commentDto = modelMapper.map(comment, CommentDto.class);
+//        CommentDto commentDto = new CommentDto();
+//        commentDto.setId(comment.getId());
+//        commentDto.setName(comment.getName());
+//        commentDto.setBody(comment.getBody());
+//        commentDto.setEmail(comment.getEmail());
         return commentDto;
     }
 
     private Comment mapToEntity(CommentDto commentDto) {
-        Comment comment = new Comment();
-        comment.setId(commentDto.getId());
-        comment.setName(commentDto.getName());
-        comment.setBody(commentDto.getBody());
-        comment.setEmail(commentDto.getEmail());
+        Comment comment = modelMapper.map(commentDto, Comment.class);
+//        Comment comment = new Comment();
+//        comment.setId(commentDto.getId());
+//        comment.setName(commentDto.getName());
+//        comment.setBody(commentDto.getBody());
+//        comment.setEmail(commentDto.getEmail());
         return comment;
     }
 }

@@ -1,11 +1,15 @@
 package com.springboot.blog.service.ipml;
+import com.springboot.blog.entity.Comment;
 import com.springboot.blog.entity.Post;
 import com.springboot.blog.exception.ResourceNotFoundException;
+import com.springboot.blog.payload.CommentDto;
 import com.springboot.blog.payload.PostResponse;
+import com.springboot.blog.repository.CommentRepository;
 import com.springboot.blog.repository.PostRepository;
 import com.springboot.blog.payload.PostDto;
 import com.springboot.blog.service.PostService;
 import lombok.RequiredArgsConstructor;
+import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
@@ -20,6 +24,9 @@ public class PostServiceImpl implements PostService {
 
 
     private final PostRepository postRepository;
+    private final CommentRepository commentRepository;
+
+    private final ModelMapper modelMapper;
 
     @Override
     public PostDto createPost(PostDto postDto) {
@@ -64,6 +71,15 @@ public class PostServiceImpl implements PostService {
         return mapToDTO(post);
     }
 
+    private CommentDto mapToCommentDTO(Comment comment) {
+        CommentDto commentDto = new CommentDto();
+        commentDto.setId(comment.getId());
+        commentDto.setName(comment.getName());
+        commentDto.setBody(comment.getBody());
+        commentDto.setEmail(comment.getEmail());
+        return commentDto;
+    }
+
     @Override
     public PostDto updatePostById(long id, PostDto postDto) {
         Post post = postRepository.findById(id)
@@ -86,20 +102,24 @@ public class PostServiceImpl implements PostService {
 
     // convert Entity int DTO
     private PostDto mapToDTO(Post post) {
+//        PostDto postDto = modelMapper.map(post, PostDto.class);
         PostDto postDto = new PostDto();
         postDto.setId(post.getId());
         postDto.setTitle(post.getTitle());
         postDto.setDescription(post.getDescription());
         postDto.setContent(post.getContent());
+
+        List<Comment> commentList = commentRepository.findByPostId(post.getId());
+        postDto.setComments(commentList.stream().map(this::mapToCommentDTO).collect(Collectors.toSet()));
         return postDto;
     }
 
     // COn
     private Post mapToEntity(PostDto postDto) {
-        Post post = new Post();
-        post.setTitle(postDto.getTitle());
-        post.setDescription(postDto.getDescription());
-        post.setContent(postDto.getContent());
+        Post post = modelMapper.map(postDto, Post.class);
+//        post.setTitle(postDto.getTitle());
+//        post.setDescription(postDto.getDescription());
+//        post.setContent(postDto.getContent());
         return post;
     }
 }
