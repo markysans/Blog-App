@@ -3,6 +3,7 @@ package com.springboot.blog.exception;
 import com.springboot.blog.payload.ErrorDetails;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -59,6 +60,17 @@ public class GlobalExceptionHandler {
 //                        .details(webRequest.getDescription(false))
 //                        .build()
 //        );
+    }
+
+    @ExceptionHandler(AccessDeniedException.class)
+    public ResponseEntity<Object> handleAccessDeniedException(AccessDeniedException accessDeniedException, WebRequest webRequest) {
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(
+                ErrorDetails.builder()
+                        .timestamp(LocalDate.now())
+                        .message(accessDeniedException.getMessage())
+                        .details(webRequest.getDescription(false))
+                        .build()
+        );
     }
 
     @ExceptionHandler(Exception.class)
