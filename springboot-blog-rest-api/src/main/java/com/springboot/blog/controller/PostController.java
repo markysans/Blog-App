@@ -7,8 +7,10 @@ import com.springboot.blog.utils.AppConstants;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.lang.reflect.InvocationTargetException;
 import java.util.List;
 
@@ -20,7 +22,8 @@ public class PostController {
 
     // Create Blog post REST api
     @PostMapping
-    public ResponseEntity<PostDto> createPost(@RequestBody PostDto postDto) {
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<PostDto> createPost(@Valid @RequestBody PostDto postDto) {
         return new ResponseEntity<>(postService.createPost(postDto), HttpStatus.CREATED);
     }
 
@@ -42,12 +45,14 @@ public class PostController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<PostDto> updatePostById(@PathVariable(name="id") long id, @RequestBody PostDto postDto) {
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<PostDto> updatePostById(@PathVariable(name="id") long id, @Valid @RequestBody PostDto postDto) {
         return ResponseEntity.ok(postService.updatePostById(id, postDto));
     }
 
     //Delete post rest api
     @DeleteMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<String> deletePost(@PathVariable(name = "id") long id){
         postService.deletePostById(id);
         return ResponseEntity.ok("Post Entity Deleted Successfully");

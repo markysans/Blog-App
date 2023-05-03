@@ -13,8 +13,10 @@ import org.modelmapper.ModelMapper;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 @Service
 @RequiredArgsConstructor
@@ -103,5 +105,23 @@ public class CommentServiceImpl implements CommentService {
 //        comment.setBody(commentDto.getBody());
 //        comment.setEmail(commentDto.getEmail());
         return comment;
+    }
+
+    public static void main(String args[]) {
+//        int a[] = {'', 20, 30, 45, 56};
+//
+//        List<Integer> arrList = IntStream.of(a).sorted().boxed().collect(Collectors.toList());
+////        arrList = arrList.stream().sorted().toList();
+//        arrList.remove(2);
+//        arrList.get()
+
+        String s = "fbc";
+        char c = s.charAt(0);
+
+        int map = 3;
+
+        System.out.println(Integer.toBinaryString((1 << 5)^map));
+
+//        System.out.println(arrList);
     }
 }
