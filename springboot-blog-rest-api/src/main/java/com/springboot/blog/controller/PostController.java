@@ -22,7 +22,7 @@ public class PostController {
 
     // Create Blog post REST api
     @PostMapping
-    @PreAuthorize("hasRole('ADMIN')")
+//    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<PostDto> createPost(@Valid @RequestBody PostDto postDto) {
         return new ResponseEntity<>(postService.createPost(postDto), HttpStatus.CREATED);
     }
@@ -45,14 +45,14 @@ public class PostController {
     }
 
     @PutMapping("/{id}")
-    @PreAuthorize("hasRole('ADMIN')")
+//    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<PostDto> updatePostById(@PathVariable(name="id") long id, @Valid @RequestBody PostDto postDto) {
         return ResponseEntity.ok(postService.updatePostById(id, postDto));
     }
 
     //Delete post rest api
     @DeleteMapping("/{id}")
-    @PreAuthorize("hasRole('ADMIN')")
+//    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<String> deletePost(@PathVariable(name = "id") long id){
         postService.deletePostById(id);
         return ResponseEntity.ok("Post Entity Deleted Successfully");
