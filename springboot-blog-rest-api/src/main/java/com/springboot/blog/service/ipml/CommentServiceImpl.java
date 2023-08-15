@@ -107,21 +107,4 @@ public class CommentServiceImpl implements CommentService {
         return comment;
     }
 
-    public static void main(String args[]) {
-//        int a[] = {'', 20, 30, 45, 56};
-//
-//        List<Integer> arrList = IntStream.of(a).sorted().boxed().collect(Collectors.toList());
-////        arrList = arrList.stream().sorted().toList();
-//        arrList.remove(2);
-//        arrList.get()
-
-        String s = "fbc";
-        char c = s.charAt(0);
-
-        int map = 3;
-
-        System.out.println(Integer.toBinaryString((1 << 5)^map));
-
-//        System.out.println(arrList);
-    }
 }

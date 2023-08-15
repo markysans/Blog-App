@@ -1,6 +1,7 @@
 package com.springboot.blog.exception;
 
 import com.springboot.blog.payload.ErrorDetails;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
@@ -16,6 +17,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 @ControllerAdvice
+@Slf4j
 public class GlobalExceptionHandler {
 
     @ExceptionHandler(BlogAPIException.class)
@@ -75,12 +77,13 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ErrorDetails> handleGlobalException(Exception exception, WebRequest webRequest) {
+        log.info(exception.getLocalizedMessage());
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                 .body(
                         ErrorDetails.builder()
                                 .timestamp(LocalDate.now())
                                 .message(exception.getMessage())
-                                .details(webRequest.getDescription(false))
+                                .details(webRequest.getDescription(true))
                                 .build()
                 );
     }
