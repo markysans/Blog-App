@@ -33,8 +33,8 @@ public class SecurityConfig {
         http.csrf().disable()
                 .authorizeHttpRequests((authorize) ->
 //                    authorize.anyRequest().authenticated()
-                    authorize.antMatchers(HttpMethod.GET, "/api/*").permitAll()
-                            .antMatchers("/api/auth/**").permitAll()
+                    authorize.requestMatchers(HttpMethod.GET, "/api/*").permitAll()
+                            .requestMatchers("/api/auth/**").permitAll()
                             .anyRequest().authenticated()
                 ).httpBasic(Customizer.withDefaults());
         return http.build();
