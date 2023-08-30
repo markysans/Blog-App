@@ -5,6 +5,7 @@ import com.springboot.blog.exception.BlogAPIException;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
@@ -12,7 +13,7 @@ import org.springframework.stereotype.Component;
 
 import java.security.Key;
 import java.util.Date;
-
+@Slf4j
 @Component
 public class JwtTokenProvider {
     @Value("${app.jwt.secret}")
@@ -45,7 +46,7 @@ public class JwtTokenProvider {
         Claims claims = Jwts.parserBuilder()
                     .setSigningKey(getKey())
                     .build()
-                    .parseClaimsJwt(token)
+                    .parseClaimsJws(token)
                     .getBody();
 
         String userName = claims.getSubject();
@@ -56,16 +57,19 @@ public class JwtTokenProvider {
 
     public boolean validateToken(String token) {
         try{
+            log.info("Validating token.....");
             Jwts.parserBuilder()
                     .setSigningKey(getKey())
                     .build()
                     .parse(token);
+            log.info("Success Validating token");
             return true;
         } catch (MalformedJwtException ex) {
             throw new BlogAPIException(HttpStatus.BAD_REQUEST, "Invalid JWT token");
         } catch (ExpiredJwtException ex) {
             throw new BlogAPIException(HttpStatus.BAD_REQUEST, "Expired JWT token");
         } catch (UnsupportedJwtException ex) {
+            log.info("UnsupportedJwtException...");
             throw new BlogAPIException(HttpStatus.BAD_REQUEST, "Unsupported JWT token");
         } catch (IllegalArgumentException ex) {
             throw new BlogAPIException(HttpStatus.BAD_REQUEST, "JWT claims string is empty");
