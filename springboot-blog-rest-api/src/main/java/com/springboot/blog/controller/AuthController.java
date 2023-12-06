@@ -2,6 +2,7 @@ package com.springboot.blog.controller;
 
 import com.springboot.blog.payload.JWTAuthResponse;
 import com.springboot.blog.payload.LoginDto;
+import com.springboot.blog.payload.RefreshTokenDTO;
 import com.springboot.blog.payload.RegisterDto;
 import com.springboot.blog.service.AuthService;
 import lombok.RequiredArgsConstructor;
@@ -26,6 +27,12 @@ public class AuthController {
     @PostMapping(value = {"/register", "/signUp"})
     public ResponseEntity<String> register(@RequestBody RegisterDto registerDto) {
         String response = authService.register(registerDto);
+        return ResponseEntity.ok(response);
+    }
+
+    @PostMapping("/refreshToken")
+    public ResponseEntity<Object> refreshToken(@RequestBody RefreshTokenDTO refreshTokenDTO) {
+        JWTAuthResponse response = authService.refreshToken(refreshTokenDTO);
         return ResponseEntity.ok(response);
     }
 }

@@ -1,10 +1,14 @@
 package com.springboot.blog.security;
 
 
+import com.springboot.blog.entity.RefreshToken;
+import com.springboot.blog.entity.User;
 import com.springboot.blog.exception.BlogAPIException;
+import com.springboot.blog.repository.RefreshTokenRepository;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
@@ -12,18 +16,26 @@ import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Component;
 
 import java.security.Key;
+import java.time.Instant;
 import java.util.Date;
+import java.util.Optional;
+import java.util.UUID;
+
 @Slf4j
+@RequiredArgsConstructor
 @Component
 public class JwtTokenProvider {
     @Value("${app.jwt.secret}")
     private String jwtSecret;
-    @Value("${app.jwt.expiration.milliseconds}")
+    @Value("${app.jwt.expiration.milliseconds.accessToken}")
     private long jwtExpirationDate;
+    @Value("${app.jwt.expiration.milliseconds.refreshToken}")
+    private long jwtRefreshTokenExpiration;
+
+    private final RefreshTokenRepository refreshTokenRepository;
 
     // generate JWT token
-    public String generateToken(Authentication authentication) {
-        String userName = authentication.getName();
+    public String generateTokenByUserName(String userName) {
         Date currentDate = new Date();
         Date expireDate = new Date(currentDate.getTime() + jwtExpirationDate);
         return Jwts.builder()
@@ -74,7 +86,23 @@ public class JwtTokenProvider {
         } catch (IllegalArgumentException ex) {
             throw new BlogAPIException(HttpStatus.BAD_REQUEST, "JWT claims string is empty");
         }
+    }
 
+    public String generateRefreshToken(User user) {
+        RefreshToken refreshToken = refreshTokenRepository.getByUser(user).orElseGet(RefreshToken::new);
+        refreshToken.setUser(user);
+        refreshToken.setToken(UUID.randomUUID().toString());
+        refreshToken.setExpiryDate(Instant.now().plusMillis(jwtRefreshTokenExpiration));
+        refreshTokenRepository.save(refreshToken);
+        return refreshToken.getToken();
+    }
+
+    public RefreshToken verifyExpiration(RefreshToken token) {
+        if(token.getExpiryDate().compareTo(Instant.now()) < 0) {
+            refreshTokenRepository.delete(token);
+            throw new BlogAPIException(HttpStatus.UNAUTHORIZED, "Refresh Token was expired please make a new Sign In request");
+        }
+        return token;
     }
 
 }

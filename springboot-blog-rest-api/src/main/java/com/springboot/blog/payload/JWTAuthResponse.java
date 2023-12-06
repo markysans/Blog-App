@@ -9,5 +9,6 @@ import lombok.Setter;
 @Getter
 public class JWTAuthResponse {
     private String accessToken;
+    private String refreshToken;
     private String tokenType;
 }
